@@ -52,8 +52,9 @@
 						<div id="header-search-box">
 							<a id="search-menu" href="#"><span id="search-icon" class="ion-ios-search-strong"></span></a>
 							<div id="search-form" class="search-form">
-								<form role="search" method="get" id="searchform" action="#">
-									<input type="search" placeholder="Search" required>
+                                <form role="search" method="get" id="searchform" action="{%url 'blog:search'%}">
+                                    {%csrf_token%}
+									<input type="search" placeholder="Search" required name="q">
 									<button type="submit"><span class="ion-ios-search-strong"></span></button>
 								</form>				
 							</div>
@@ -71,6 +72,10 @@
                         {%block main%}
                         {%endblock main%}
 					</main>
+                    <aside>
+                         <!-- 由于 toc 的值为一段 HTML 文本，所以要使用 safe 标签过滤 -->
+                        {{ toc|safe  }}
+                    </aside>
 					<aside class="col-md-4">
 						<div class="widget widget-recent-posts">		
 							<h3 class="widget-title">Recent Posts</h3>
@@ -89,24 +94,27 @@
 							<ul>
                                 {%for date in date_list%}
 								<li>
-                                    <a href="{% url 'blog:archives' date.year date.month%}">{{date.year}} 年 {{ date.month  }} 月</a>
+                                <a href="{% url 'blog:archives' date.year date.month%}">{{date.year}} 年 {{ date.month  }} 月</a>
 								</li>
                                 {%endfor%}
 							</ul>
 						</div>
 
 						<div class="widget widget-category">		
-							<h3 class="widget-title">Category</h3>		
-                            {% get_categories as category_list%}
+							<h3 class="widget-title">Category</h3>
+                            {% get_categories as category_list %} 
+                            {% get_num_posts as category_list %}
 							<ul>
                                 {%for category in category_list%}
 								<li>
-                                <a href="{%url 'blog:category' category.pk%}">{{category.name}}</a>
+                                <a href="{%url 'blog:category' category.pk%}">{{category.name}}({{category.num_posts}})</a>
 								</li>
                                 {%endfor%}
+                                
 							</ul>
 						</div>
 					</aside>
+                    <h2>浏览量:{{post.views}}</h2>
 				</div>
 			</div>
 		</div>
